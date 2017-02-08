@@ -25,7 +25,7 @@ main:
 expr:
   | NOT expr { Not $2 }
   | VAR { Var $1 }
-  | VNOT VAR { Not (Var $1) }
+  | VNOT VAR { Not (Var $2) }
   | expr AND expr { And ($1, $3) }
   | expr OR expr { Or ($1, $3) }
   | expr XOR expr { Xor ($1, $3) }
