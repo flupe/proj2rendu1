@@ -4,7 +4,7 @@
 
 /* declarations */
 %token <int> VAR
-%token NOT OR AND IMPLIES XOR EQUIV
+%token NOT VNOT OR AND IMPLIES XOR EQUIV
 %token LPAREN RPAREN
 %token EOL
 
