@@ -3,7 +3,7 @@
 %}
 
 /* declarations */
-%token <bool> BOOL
+%token <int> VAR
 %token NOT OR AND IMPLIES XOR EQUIV
 %token LPAREN RPAREN
 %token EOL
@@ -24,7 +24,8 @@ main:
 
 expr:
   | NOT expr { Not $2 }
-  | BOOL { Const $1 }
+  | VAR { Var $1 }
+  | VNOT VAR { Not (Var $1) }
   | expr AND expr { And ($1, $3) }
   | expr OR expr { Or ($1, $3) }
   | expr XOR expr { Xor ($1, $3) }

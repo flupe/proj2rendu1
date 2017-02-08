@@ -1,5 +1,5 @@
 type expr =
-  | Const of bool
+  | Var of int
   | And of expr * expr
   | Or of expr * expr
   | Xor of expr * expr
