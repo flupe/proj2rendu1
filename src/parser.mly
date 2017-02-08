@@ -3,7 +3,7 @@
 %}
 
 /* declarations */
-%token <int> INT
+%token <bool> BOOL
 %token NOT OR AND IMPLIES XOR EQUIV
 %token LPAREN RPAREN
 %token EOL
@@ -19,17 +19,17 @@
 
 %%
 main:
-  expr EOL
+  expr EOL { $1 }
 ;
 
 expr:
   | NOT expr { Not $2 }
-  | INT { Const $1 }
-  | expr AND expr { And $1, $3 }
-  | expr OR expr { Or $1, $3 }
-  | expr XOR expr { Xor $1, $3 }
-  | expr IMPLIES expr { Implies $1, $3 }
-  | expr EQUIV expr { Equiv $1, $3 }
+  | BOOL { Const $1 }
+  | expr AND expr { And ($1, $3) }
+  | expr OR expr { Or ($1, $3) }
+  | expr XOR expr { Xor ($1, $3) }
+  | expr IMPLIES expr { Implies ($1, $3) }
+  | expr EQUIV expr { Equiv ($1, $3) }
   | LPAREN expr RPAREN { $2 }
 ;
 

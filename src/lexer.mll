@@ -5,10 +5,11 @@
 
 rule token = parse
   | '~' { NOT }
-  | "\/" { OR }
+  | "\\/" { OR }
   | "/\\" { AND }
   | 'X' { XOR }
   | "=>" { IMPLIES }
   | "<=>" { EQUIV }
   | '(' { LPAREN }
   | ')' { RPAREN }
+  | eof { raise Eof }
