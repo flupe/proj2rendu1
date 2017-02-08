@@ -4,9 +4,10 @@
 }
 
 rule token = parse
+  | [' ' '\t'] { token lexbuf }
   | '~'    { NOT }
   | '-'    { VNOT }
-  | ['\n'] { EOL }
+  | ['0' '\n'] { EOL }
   | "\\/"  { OR }
   | "/\\"  { AND }
   | 'X'    { XOR }

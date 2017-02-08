@@ -2,7 +2,6 @@
   open Expr
 %}
 
-/* declarations */
 %token <int> VAR
 %token NOT VNOT OR AND XOR IMPLIES EQUIV
 %token LPAREN RPAREN
@@ -22,7 +21,6 @@
 %%
 main:
   expr EOL { $1 }
-;
 
 expr:
   | VAR { Var $1 }
@@ -34,5 +32,4 @@ expr:
   | expr XOR expr { Xor ($1, $3) }
   | expr IMPLIES expr { Implies ($1, $3) }
   | expr EQUIV expr { Equiv ($1, $3) }
-;
 
