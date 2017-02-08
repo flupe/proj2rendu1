@@ -4,7 +4,7 @@
 
 /* declarations */
 %token <int> VAR
-%token NOT VNOT OR AND IMPLIES XOR EQUIV
+%token NOT VNOT OR AND XOR IMPLIES EQUIV
 %token LPAREN RPAREN
 %token EOL
 
@@ -13,6 +13,8 @@
 %left XOR
 %left IMPLIES
 %left EQUIV
+%nonassoc NOT
+%nonassoc VNOT
 
 %start main
 %type <Expr.expr> main
@@ -23,14 +25,14 @@ main:
 ;
 
 expr:
-  | NOT expr { Not $2 }
   | VAR { Var $1 }
   | VNOT VAR { Not (Var $2) }
+  | LPAREN expr RPAREN { $2 }
   | expr AND expr { And ($1, $3) }
   | expr OR expr { Or ($1, $3) }
   | expr XOR expr { Xor ($1, $3) }
   | expr IMPLIES expr { Implies ($1, $3) }
   | expr EQUIV expr { Equiv ($1, $3) }
-  | LPAREN expr RPAREN { $2 }
+  | NOT expr { Not $2 }
 ;
 
