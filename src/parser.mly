@@ -8,9 +8,9 @@
 %token LPAREN RPAREN
 %token EOL
 
+%left AND
 %left OR
 %left XOR
-%left AND
 %left IMPLIES
 %left EQUIV
 

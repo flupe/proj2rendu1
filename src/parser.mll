@@ -4,11 +4,11 @@
 }
 
 rule token = parse
-  | '~' { NOT }
-  | "\/" { OR }
+  | '~'   { NOT }
+  | "\/"  { OR }
   | "/\\" { AND }
-  | 'X' { XOR }
-  | "=>" { IMPLIES }
+  | 'X'   { XOR }
+  | "=>"  { IMPLIES }
   | "<=>" { EQUIV }
-  | '(' { LPAREN }
-  | ')' { RPAREN }
+  | '('   { LPAREN }
+  | ')'   { RPAREN }
