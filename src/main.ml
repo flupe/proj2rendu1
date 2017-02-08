@@ -1,7 +1,7 @@
 open Expr
 
 let compile e = begin
-  ()
+  print_endline @@ string_of_expr e
 end
 
 let lexbuf = Lexing.from_channel stdin
