@@ -8,11 +8,11 @@
 %token LPAREN RPAREN
 %token EOL
 
-%left AND
-%left OR
+%left IMPLIES EQUIV
 %left XOR
-%left IMPLIES
-%left EQUIV
+%left OR
+%left AND
+
 %nonassoc NOT
 %nonassoc VNOT
 
@@ -27,12 +27,12 @@ main:
 expr:
   | VAR { Var $1 }
   | VNOT VAR { Not (Var $2) }
+  | NOT expr { Not $2 }
   | LPAREN expr RPAREN { $2 }
   | expr AND expr { And ($1, $3) }
   | expr OR expr { Or ($1, $3) }
   | expr XOR expr { Xor ($1, $3) }
   | expr IMPLIES expr { Implies ($1, $3) }
   | expr EQUIV expr { Equiv ($1, $3) }
-  | NOT expr { Not $2 }
 ;
 
