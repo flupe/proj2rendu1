@@ -15,7 +15,7 @@ let rec string_of_expr = function
   | And (l, r) -> "(" ^ string_of_expr l ^ ") /\\ (" ^ string_of_expr r ^ ")"
   | Or (l, r) -> "(" ^ string_of_expr l ^ ") \\/ (" ^ string_of_expr r ^ ")"
   | Xor (l, r) -> "(" ^ string_of_expr l ^ ") X (" ^ string_of_expr r ^ ")"
-  | Not e -> "~(" ^ string_of_expr e ^ ")" 
+  | Not e -> "~(" ^ string_of_expr e ^ ")"
   | Implies (l, r) -> "(" ^ string_of_expr l ^ ") => (" ^ string_of_expr r ^ ")"
   | Equiv (l, r) -> "(" ^ string_of_expr l ^ ") <=> (" ^ string_of_expr r ^ ")"
 
@@ -59,11 +59,12 @@ let rename_vars e =
 let rec apply e i v = match e with
   | Var x when x = i -> v
   | Not e ->
-      let e' = apply e i v in
-      match e' with
-      | True -> False
-      | False -> True
-      | _ -> Not e'
+      let e' = apply e i v in begin
+        match e' with
+        | True -> False
+        | False -> True
+        | _ -> Not e'
+      end
 
   | And (l, r) ->
       let l' = apply l i v in
@@ -73,7 +74,6 @@ let rec apply e i v = match e with
         | True, True -> True
         | _, _ -> And (l', r')
       end
-
 
   | Or (l, r) ->
       let l' = apply l i v in
@@ -99,9 +99,9 @@ let rec apply e i v = match e with
       let l' = apply l i v in
       let r' = apply r i v in begin
         match l', r' with
+        | False, True -> False
         | False, _
         | True, True -> True
-        | False, True -> False
         | _, _ -> Implies (l', r')
       end
 
@@ -117,4 +117,3 @@ let rec apply e i v = match e with
       end
 
   | x -> x
-
