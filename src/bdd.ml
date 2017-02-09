@@ -30,7 +30,7 @@ let from_expr e =
     else if HTbl.mem table (i, l, h) then
       HTbl.find table (i, l, h)
     else let u = add i l h in begin
-      HTbl.add table (i, h, l) u;
+      HTbl.add table (i, l, h) u;
       u
     end
   in
