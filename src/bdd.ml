@@ -38,10 +38,10 @@ let from_expr e =
   let rec build t i =
     if i > n then
       if t = False then 0 else 1
-      else
-        let v0 = build (apply t i False) (i + 1) in
-        let v1 = build (apply t i True) (i + 1) in
-        mk i v0 v1
+    else
+      let v0 = build (apply t i False) (i + 1) in
+      let v1 = build (apply t i True) (i + 1) in
+      mk i v0 v1
   in
 
   begin

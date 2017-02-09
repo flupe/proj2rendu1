@@ -58,6 +58,7 @@ let rename_vars e =
 
 let rec apply e i v = match e with
   | Var x when x = i -> v
+
   | Not e ->
       let e' = apply e i v in begin
         match e' with
@@ -113,7 +114,7 @@ let rec apply e i v = match e with
         | True, True -> True
         | True, False
         | False, True -> False
-        | _, _ -> Equiv(l, r)
+        | _, _ -> Equiv(l', r')
       end
 
   | x -> x

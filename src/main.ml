@@ -6,7 +6,7 @@ let compile e = begin
   List.iter (fun (k, (v, l, h)) ->
     print_endline @@ soi k^": "^soi v^", "^soi l^", "^soi h
   ) bdd;
-  print_endline @@ string_of_expr e
+  print_endline @@ string_of_expr e;
 end
 
 let lexbuf = Lexing.from_channel stdin
