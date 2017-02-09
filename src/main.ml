@@ -1,6 +1,7 @@
 open Expr
 
 let compile e = begin
+  let bdd = Bdd.from_expr e in
   print_endline @@ string_of_expr e
 end
 
