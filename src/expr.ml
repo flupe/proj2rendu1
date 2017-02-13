@@ -19,6 +19,7 @@ let rec string_of_expr = function
   | Implies (l, r) -> "(" ^ string_of_expr l ^ ") => (" ^ string_of_expr r ^ ")"
   | Equiv (l, r) -> "(" ^ string_of_expr l ^ ") <=> (" ^ string_of_expr r ^ ")"
 
+
 let max_var e =
   let rec aux m = function
     | Var x -> max m x
@@ -100,7 +101,7 @@ let rec apply e i v = match e with
       let l' = apply l i v in
       let r' = apply r i v in begin
         match l', r' with
-        | False, True -> False
+        | True, False -> False
         | False, _
         | True, True -> True
         | _, _ -> Implies (l', r')
@@ -114,7 +115,7 @@ let rec apply e i v = match e with
         | True, True -> True
         | True, False
         | False, True -> False
-        | _, _ -> Equiv(l', r')
+        | _, _ -> Equiv (l', r')
       end
 
   | x -> x

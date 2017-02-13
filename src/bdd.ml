@@ -6,16 +6,14 @@ let pair i j =
 module HTbl = Hashtbl.Make(struct
   type t =
     int * int * int
-
   let equal = (=)
-
   let hash (i, v0, v1) =
     pair i (pair v0 v1)
 end)
 
 let from_expr e =
   let e', n = rename_vars e in
-  let nodes = ref [0, (0, 0, 0); 1, (0, 0, 0)] in
+  let nodes = ref [1, (0, 0, 0); 0, (0, 0, 0)] in
   let table = HTbl.create n in
   let k = ref 1 in
 
@@ -35,7 +33,7 @@ let from_expr e =
     end
   in
 
-  let rec build t i =
+ let rec build t i =
     if i > n then
       if t = False then 0 else 1
     else
@@ -45,6 +43,6 @@ let from_expr e =
   in
 
   begin
-    ignore @@ build e 1;
+    ignore @@ build e' 1;
     !nodes
   end
