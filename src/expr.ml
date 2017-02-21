@@ -19,21 +19,6 @@ let rec string_of_expr = function
   | Implies (l, r) -> "(" ^ string_of_expr l ^ ") => (" ^ string_of_expr r ^ ")"
   | Equiv (l, r) -> "(" ^ string_of_expr l ^ ") <=> (" ^ string_of_expr r ^ ")"
 
-
-let max_var e =
-  let rec aux m = function
-    | Var x -> max m x
-    | Not e -> aux m e
-    | True
-    | False -> m
-    | And (l, r)
-    | Or (l, r)
-    | Xor (l, r)
-    | Implies (l, r)
-    | Equiv (l, r) ->
-        aux (aux m l) r
-  in aux 0 e
-
 let rename_vars e =
   let count = ref 0 in
   let vars = ref [] in
