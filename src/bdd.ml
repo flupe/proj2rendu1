@@ -44,18 +44,18 @@ let from_expr e =
   let _true = hashcons True in
   let _false = hashcons False in
 
-  let mk = function
-    | Node (v, l, h) when l == h -> l
-    | n -> hashcons n
+  let mk v l h =
+    if l == h then l
+    else hashcons (Node(v, l, h))
   in
 
  let rec build t i =
     if i > n then
       if t = Expr.True then _true else _false
     else
-      let v0 = build (Expr.apply t i Expr.False) (i + 1) in
-      let v1 = build (Expr.apply t i Expr.True) (i + 1) in
-      mk (Node(i, v0, v1))
+      let l = build (Expr.apply t i Expr.False) (i + 1) in
+      let h = build (Expr.apply t i Expr.True) (i + 1) in
+      mk i l h
   in
   build e' 1
 

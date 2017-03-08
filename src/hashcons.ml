@@ -126,7 +126,17 @@ module Make (H : HashedType) : (S with type data = H.t) = struct
     let bucket_size = Weak.length bucket in
 
     let rec loop i =
-      if i >= bucket_size then begin
+      if i < bucket_size then begin
+        (* used to not hijack garbage collection *)
+        match Weak.get_copy bucket i with
+        | Some d when d.value = v ->
+            begin match Weak.get bucket i with
+              | Some d -> d
+              | _ -> loop (i + 1)
+            end
+        | _ -> loop (i + 1)
+      end
+      else begin
         let node =
           { hash_key = hash_key
           ; tag = next_tag t
@@ -141,22 +151,12 @@ module Make (H : HashedType) : (S with type data = H.t) = struct
           resize t;
 
         node
-
-      end else begin
-        (* used to not hijack garbage collection *)
-        match Weak.get_copy bucket i with
-          | Some d when d.value = v ->
-              begin match Weak.get bucket i with
-                | Some d -> d
-                | _ -> loop (i + 1)
-              end
-          | _ -> loop (i + 1)
       end
     in
     loop 0
 
 
-  let count table =
-    0
+  let count =
+    fold (fun count _ -> count + 1) 0
 end
 
