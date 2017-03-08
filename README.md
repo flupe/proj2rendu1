@@ -2,4 +2,4 @@
 
 ## usage
 - compile with `make`
-- run with `./f2bdd`
+- run with `./f2bdd blabla.form`

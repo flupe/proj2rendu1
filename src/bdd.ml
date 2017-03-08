@@ -1,48 +1,105 @@
-open Expr
+open Hashcons
 
-let pair i j =
-  (i + j) * (i + j + 1) / 2 + i
+type robdd = bdd hash_consed
+and bdd
+  = True
+  | False
+  | Node of int * robdd * robdd
 
-module HTbl = Hashtbl.Make(struct
-  type t =
-    int * int * int
-  let equal = (=)
-  let hash (i, v0, v1) =
-    pair i (pair v0 v1)
-end)
+module HashedBdd = struct
+  type t = bdd
+
+  let equal x y = match x, y with
+    | True, True
+    | False, False -> true
+    | Node (v1, l1, h1), Node (v2, l2, h2) ->
+        v1 = v2 && l1 == l2 && h1 == h2
+    | _, _ -> false
+
+  let hash = function
+    | False -> 0
+    | True -> 1
+    | Node (v, l, h) ->
+        19 * (19 * l.tag + h.tag) + v
+end
+
+module OrderedRobdd = struct
+  type t = robdd
+
+  let compare a b =
+    Pervasives.compare a.tag b.tag
+end
+
+module HC = Hashcons.Make(HashedBdd)
+(* ideally we could implement optimized Sets for hash_consed items *)
+(* as suggested by the paper (Patricia trees and such) but eh *)
+module HS = Set.Make(OrderedRobdd)
+
 
 let from_expr e =
-  let e', n = rename_vars e in
-  let nodes = ref [1, (0, 0, 0); 0, (0, 0, 0)] in
-  let table = HTbl.create n in
-  let k = ref 1 in
+  let e', n = Expr.rename_vars e in
+  let memory = HC.create 251 in
+  let hashcons = HC.hashcons memory in
 
-  let add i l h =
-    incr k;
-    nodes := (!k, (i, l, h)) :: !nodes;
-    !k
-  in
+  let _true = hashcons True in
+  let _false = hashcons False in
 
-  let mk i l h =
-    if l = h then l
-    else if HTbl.mem table (i, l, h) then
-      HTbl.find table (i, l, h)
-    else let u = add i l h in begin
-      HTbl.add table (i, l, h) u;
-      u
-    end
+  let mk = function
+    | Node (v, l, h) when l == h -> l
+    | n -> hashcons n
   in
 
  let rec build t i =
     if i > n then
-      if t = False then 0 else 1
+      if t = Expr.True then _true else _false
     else
-      let v0 = build (apply t i False) (i + 1) in
-      let v1 = build (apply t i True) (i + 1) in
-      mk i v0 v1
+      let v0 = build (Expr.apply t i Expr.False) (i + 1) in
+      let v1 = build (Expr.apply t i Expr.True) (i + 1) in
+      mk (Node(i, v0, v1))
+  in
+  build e' 1
+
+
+(* temporary impl *)
+let display robdd =
+  let low_edges = ref [] in
+  let high_edges = ref [] in
+  let nodes = ref [] in
+
+  let add_node tag name =
+    nodes := (string_of_int tag ^ " [label=\"" ^ name ^ "\"];\n") :: !nodes
   in
 
-  begin
-    ignore @@ build e' 1;
-    !nodes
-  end
+  let edge a b =
+    string_of_int a.tag ^ " -> " ^ string_of_int b.tag ^ ";\n"
+  in
+
+  let rec explore node acc =
+    if not (HS.mem node acc) then begin
+      let set = HS.add node acc in
+      match node.value with
+      | True -> add_node node.tag "true"; set
+      | False -> add_node node.tag "false"; set
+      | Node (v, l, h) ->
+        add_node node.tag (string_of_int v);
+        low_edges := edge node l :: !low_edges;
+        high_edges := edge node h :: !high_edges;
+        set
+        |> explore l
+        |> explore h
+    end
+    else acc
+  in
+  ignore @@ explore robdd HS.empty;
+
+  let out = open_out "/tmp/graph.dot" in begin
+    output_string out "digraph G {\n";
+    List.iter (output_string out) !nodes;
+    List.iter (output_string out) !high_edges;
+    output_string out "edge [style=dotted];\n";
+    List.iter (output_string out) !low_edges;
+    output_string out "}";
+  end;
+
+  ignore @@ Sys.command "dot -Tpdf /tmp/graph.dot -o /tmp/graph.pdf";
+  ignore @@ Sys.command "xdg-open /tmp/graph.pdf"
