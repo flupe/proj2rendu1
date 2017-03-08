@@ -21,10 +21,11 @@ let speclist =
 let () = begin
   Arg.parse speclist ((:=) source_file) "F2BDD 2017";
 
+  try
     open_in !source_file
     |> Lexing.from_channel
     |> Parser.main Lexer.token
     |> compile
-  (* )with _ ->
-     print_string @@ "Error while parsing file " ^ !source_file ^ "\n" *)
+  with _ ->
+     print_string @@ "Error while parsing file " ^ !source_file ^ "\n"
 end

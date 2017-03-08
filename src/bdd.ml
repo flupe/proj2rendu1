@@ -101,5 +101,5 @@ let display robdd =
     output_string out "}";
   end;
 
-  print_int @@ Sys.command "dot -Tpdf /tmp/graph.dot -o /tmp/graph.pdf";
+  ignore @@ Sys.command "dot -Tpdf /tmp/graph.dot -o /tmp/graph.pdf";
   ignore @@ Sys.command "xdg-open /tmp/graph.pdf"
