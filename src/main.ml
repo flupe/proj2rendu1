@@ -1,4 +1,5 @@
 open Expr
+open Cnf
 
 let compile e = begin
   let bdd = Bdd.from_expr e in
@@ -19,6 +20,16 @@ let speclist =
   ]
 
 let () = begin
+  (*let foo = Cnf.create () in
+  Cnf.append foo [Pos 2; Neg 3];
+  Cnf.append foo [Pos 2; Pos 3];
+  match Cnf.minisat foo with
+    | None -> print_string "Too bad!"
+    | Some assign -> begin
+        Printf.printf "%B\n" @@ Hashtbl.find assign 1;
+        Printf.printf "%B\n" @@ Hashtbl.find assign 2;
+        Printf.printf "%B\n" @@ Hashtbl.find assign 3;
+      end;*)
   Arg.parse speclist ((:=) source_file) "F2BDD 2017";
 
   try
@@ -27,5 +38,5 @@ let () = begin
     |> Parser.main Lexer.token
     |> compile
   with _ ->
-     print_string @@ "Error while parsing file " ^ !source_file ^ "\n"
+     print_string @@ "Error while parsing file " ^ !source_file ^ "\n"*)
 end
