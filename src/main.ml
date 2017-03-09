@@ -38,5 +38,5 @@ let () = begin
     |> Parser.main Lexer.token
     |> compile
   with _ ->
-     print_string @@ "Error while parsing file " ^ !source_file ^ "\n"*)
+     print_string @@ "Error while parsing file " ^ !source_file ^ "\n"
 end
