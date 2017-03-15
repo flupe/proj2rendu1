@@ -21,13 +21,13 @@ let rec string_of_expr = function
 
 let rename_vars e =
   let count = ref 0 in
-  let vars = ref [] in
+  let vars = Hashtbl.create 9 in
   let name id =
     try
-      List.assoc id !vars
+      Hashtbl.find vars id
     with _ ->
       incr count;
-      vars := (id, !count) :: !vars;
+      Hashtbl.add vars id !count;
       !count
   in
   let rec aux = function

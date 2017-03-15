@@ -77,7 +77,6 @@ module Make (H : HashedType) : (S with type data = H.t) = struct
   let next_size n =
     min (3 * n / 2 + 3) (Sys.max_array_length - 1)
 
-
   (* does not trigger resize *)
   let add t d =
     (* we do not recompute the hash key *)
@@ -106,7 +105,6 @@ module Make (H : HashedType) : (S with type data = H.t) = struct
     in
     loop 0
 
-
   let resize t =
     let old_length = Array.length t.table in
     let new_length = next_size old_length in
@@ -117,7 +115,6 @@ module Make (H : HashedType) : (S with type data = H.t) = struct
       iter (fun v -> add new_table v) t;
       t.size <- new_table.size;
     end
-
 
   let hashcons t v =
     let hash_key = H.hash v land max_int in

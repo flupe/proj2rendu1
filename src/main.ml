@@ -1,7 +1,7 @@
 open Expr
 
 let compile e = begin
-  let bdd = Bdd.from_expr e in
+  let bdd, n_vars, n_nodes = Bdd.from_expr e in
   Bdd.display bdd;
   print_endline @@ string_of_expr e;
 end
@@ -21,6 +21,9 @@ let speclist =
 let () = begin
   Arg.parse speclist ((:=) source_file) "F2BDD 2017";
 
+  compile @@ Test.drawers 5;
+
+  (* todo : improve & handle multiple errors *)
   try
     open_in !source_file
     |> Lexing.from_channel

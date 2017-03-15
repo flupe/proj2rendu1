@@ -14,7 +14,7 @@ module HashedBdd = struct
     | False, False -> true
     | Node (v1, l1, h1), Node (v2, l2, h2) ->
         v1 = v2 && l1 == l2 && h1 == h2
-    | _, _ -> false
+    | _ -> false
 
   let hash = function
     | False -> 0
@@ -31,15 +31,19 @@ module OrderedRobdd = struct
 end
 
 module HC = Hashcons.Make(HashedBdd)
-(* ideally we could implement optimized Sets for hash_consed items *)
+(* ideally we would implement optimized Sets for hash_consed items *)
 (* as suggested by the paper (Patricia trees and such) but eh *)
 module HS = Set.Make(OrderedRobdd)
 
 
+(* from_expr : Expr.expr -> robdd * int * int *)
 let from_expr e =
   let e', n = Expr.rename_vars e in
   let memory = HC.create 251 in
   let hashcons = HC.hashcons memory in
+
+  print_endline @@ string_of_int n;
+  print_endline @@ Expr.string_of_expr e';
 
   let _true = hashcons True in
   let _false = hashcons False in
@@ -49,7 +53,7 @@ let from_expr e =
     else hashcons (Node(v, l, h))
   in
 
- let rec build t i =
+  let rec build t i =
     if i > n then
       if t = Expr.True then _true else _false
     else
@@ -57,7 +61,7 @@ let from_expr e =
       let h = build (Expr.apply t i Expr.True) (i + 1) in
       mk i l h
   in
-  build e' 1
+  build e' 1, n, HC.count memory
 
 
 (* temporary impl *)
@@ -99,7 +103,9 @@ let display robdd =
     output_string out "edge [style=dotted];\n";
     List.iter (output_string out) !low_edges;
     output_string out "}";
+    close_out out;
   end;
 
   ignore @@ Sys.command "dot -Tpdf /tmp/graph.dot -o /tmp/graph.pdf";
   ignore @@ Sys.command "xdg-open /tmp/graph.pdf"
+
