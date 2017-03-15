@@ -2,9 +2,12 @@ open Expr
 open Cnf
 
 let compile e = begin
-  let bdd, n_vars, n_nodes = Bdd.from_expr e in
+  (* let bdd, n_vars, n_nodes = Bdd.from_expr e in
   Bdd.display bdd;
-  print_endline @@ string_of_expr e;
+  print_endline @@ string_of_expr e; *)
+  Tseitin.transform e
+  |> Cnf.dimacs
+  |> print_endline 
 end
 
 (* global parameters *)
@@ -32,9 +35,7 @@ let () = begin
       end;*)
   Arg.parse speclist ((:=) source_file) "F2BDD 2017";
 
-  Test.drawers 4
-  |> compile;
-
+  
   (* todo : improve & handle multiple errors *)
   try
     open_in !source_file
