@@ -24,10 +24,7 @@ let transform e =
 	let rec aux = function
 		| True | False ->
 			failwith "True and False not supported."
-		| Var x ->
-			let c = next_var () in
-			append cnf [Neg c; Pos x];
-			append cnf [Pos c; Neg x]; c
+		| Var x -> x
 		| Not p1 ->
 			let c, i = next_var (), aux p1 in
 			append cnf [Neg c; Neg i];
@@ -49,5 +46,5 @@ let transform e =
 		| Equiv (p1, p2) ->
 			aux @@ And (Implies (p1, p2), Implies (p2, p1)) in
 	
-	let _ = aux e in
+	append cnf [Pos (aux e)];
 	cnf
