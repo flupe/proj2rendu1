@@ -17,7 +17,7 @@ let transform e =
 	let next_var () =
 		let next = !smallest in
 		incr smallest;
-		next
+		next in
 
 	(* Applies the transform to all the sub-expressions of e,
 	   and returns the variable name that was chosen for e. *)
