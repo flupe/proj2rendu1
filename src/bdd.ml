@@ -42,9 +42,6 @@ let from_expr e =
   let memory = HC.create 251 in
   let hashcons = HC.hashcons memory in
 
-  print_endline @@ string_of_int n;
-  print_endline @@ Expr.string_of_expr e';
-
   let _true = hashcons True in
   let _false = hashcons False in
 
