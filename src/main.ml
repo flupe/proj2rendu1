@@ -32,7 +32,11 @@ let () = begin
       end;*)
   Arg.parse speclist ((:=) source_file) "F2BDD 2017";
 
-  compile @@ Test.drawers 5;
+  let test = Test.drawers 4 in
+  compile test;
+  Tseitin.transform test
+  |> minisat
+  |> ignore;
 
   (* todo : improve & handle multiple errors *)
   try
