@@ -12,7 +12,6 @@ let range p =
 let drawers n =
   let range_n = range n in
   let range_np = (n + 1) :: range_n in
-
   let left = List.fold_left (fun prev p ->
       And (prev, List.fold_left (fun prev' t ->
         Or (prev', Var(pair p t))
