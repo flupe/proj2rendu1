@@ -1,14 +1,10 @@
 (****************************************************************)
 (* A mutable, append-only data-structure used to store formulas *)
 (*  in Conjunctive Normal Form, to convert them to the DIMACS   *)
-(*     format, and to run `minisat` on  the exported file.      *)
+(*      format, and to run `minisat` on the exported file.      *)
 (****************************************************************)
 
 open Expr
-open Unix
-
-let (|.) f g =
-	fun x -> g @@ f x
 
 type literal =
 	| Pos of int
@@ -44,17 +40,38 @@ let max_var (f : t) =
 (* Converts a given formula to the DIMACS format. *)
 let dimacs (f : t) =
 	let string_of_clause c =
-		List.map int_of_literal c
-		|> List.map string_of_int
-		|> List.fold_left (fun x y -> x ^ " " ^ y) "" in
-
+		let lits = List.map int_of_literal c 
+				|> List.map string_of_int in
+		(List.fold_right (fun x y -> x ^ " " ^ y)  lits "") ^ "0" in
+	
 	"p cnf " ^ (string_of_int @@ max_var f) ^ " " ^ (string_of_int @@ List.length !f) ^
 	(List.map string_of_clause (!f) |> List.fold_left (fun x y -> x ^ "\n" ^ y) "")
 
-(* Runs `minisat` on a given formula. *)
+(* Runs `minisat` on a given formula, and returns either None if the
+   formula isn't satisfiable, or a Hashtable containing a possible
+   assignation for it otherwise. *)
 let minisat (f : t) =
-	let oc = open_process_out "minisat" in
-	output_string oc (dimacs f);
-	flush oc;
-	close_process_out oc
+	let in_file, ic = Filename.open_temp_file "minisat" "input" in
+	let out_file, oc = Filename.open_temp_file "minisat" "output" in
+	output_string ic (dimacs f);
+	flush ic;
 
+	let _ = Sys.command @@ "minisat " ^ in_file ^ " " ^ out_file ^ " > /dev/null" in
+	let result = open_in out_file in
+
+	if input_line result <> "SAT" then
+		None
+	else begin
+		let assign = Hashtbl.create (max_var f) in
+		
+		input_line result
+		|> Str.split (Str.regexp "[ \t]+")
+		|> List.map int_of_string
+		|> List.iter (function i ->
+			if i > 0 then 
+				Hashtbl.add assign i true 
+			else if i < 0 then
+				Hashtbl.add assign ((-1) * i) false);
+
+		Some assign
+	end
