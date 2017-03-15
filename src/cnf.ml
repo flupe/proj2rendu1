@@ -1,8 +1,8 @@
-(****************************************************************)
-(* A mutable, append-only data-structure used to store formulas *)
-(*  in Conjunctive Normal Form, to convert them to the DIMACS   *)
-(*      format, and to run `minisat` on the exported file.      *)
-(****************************************************************)
+(*************************************************************)
+(* A mutable data-structure to store formulas in Conjunctive *)
+(*     Normal Form, to convert them to the DIMACS format,    *)
+(*         and to run `minisat` on the exported file.        *)
+(*************************************************************)
 
 open Expr
 
@@ -15,7 +15,7 @@ type formula = clause list
 type t = formula ref
 
 (* Creates a new formula in Conjunctive Normal Form. *)
-let create () : t =
+let create () : t = 
 	ref []
 
 (* Appends a new clause to a given formula. *)
@@ -27,15 +27,37 @@ let int_of_literal = function
 	| Pos x -> x
 	| Neg x -> (-1) * x
 
+(* Returns the string representing a given literal. *)
+let string_of_literal l =
+	string_of_int @@ int_of_literal l
+
 (* Returns the biggest variable used in a given formula. *)
 let max_var (f : t) =
 	let max_var_in_clause c =
 		List.map int_of_literal c
 		|> List.map abs
 		|> List.fold_left max 0 in
-
+	
 	List.map max_var_in_clause (!f)
 	|> List.fold_left max 0
+
+(* Pretty-prints a given clause. *)
+let print_clause (c : clause) =
+	let rec aux = function
+		| x :: [] -> print_string @@ string_of_literal x
+		| x :: xs -> print_string @@ string_of_literal x; print_string " \\/ "; aux xs
+		| [] -> () in
+	print_string "(";
+	aux c;
+	print_string ")"
+
+(* Pretty-prints a given formula. *)
+let print (f : t) =
+	let rec aux = function
+		| x :: [] -> print_clause x
+		| x :: xs -> print_clause x; print_string " /\\ "; aux xs 
+		| [] -> () in
+	aux (!f)
 
 (* Converts a given formula to the DIMACS format. *)
 let dimacs (f : t) =

@@ -12,39 +12,50 @@ let transform e =
 	
 	(* The smallest unused variable name. *)
 	let smallest = ref count in
-	let cnf = create () in
+	let cnf = Cnf.create () in
+	let cache = Hashtbl.create 1000 in
 
 	let next_var () =
-		let next = !smallest in
 		incr smallest;
-		next in
+		!smallest in
 
 	(* Applies the transform to all the sub-expressions of e,
 	   and returns the variable name that was chosen for e. *)
-	let rec aux = function
+	let rec proxy e =
+		(* Before calling aux for e, we check if we haven't already
+		   encountered an equivalent expression before, in which case
+		   we reuse its variable name instead of assigning a new one. *)
+		if Hashtbl.mem cache e then
+			Hashtbl.find cache e
+		else begin
+			let c = aux e in
+			Hashtbl.add cache e c; c
+		end
+		
+	and aux = function
 		| True | False ->
 			failwith "True and False not supported."
 		| Var x -> x
 		| Not p1 ->
-			let c, i = next_var (), aux p1 in
+			let c, i = next_var (), proxy p1 in
 			append cnf [Neg c; Neg i];
 			append cnf [Pos c; Pos i]; c
 		| And (p1, p2) ->
-			let c, i, j = next_var (), aux p1, aux p2 in
+			let c, i, j = next_var (), proxy p1, proxy p2 in
 			append cnf [Neg c; Pos i];
 			append cnf [Neg c; Pos j];
 			append cnf [Pos c; Neg i; Neg j]; c
 		| Or (p1, p2) ->
-			let c, i, j = next_var (), aux p1, aux p2 in
+			let c, i, j = next_var (), proxy p1, proxy p2 in
 			append cnf [Neg c; Pos i; Pos j];
 			append cnf [Pos c; Neg i];
 			append cnf [Pos c; Neg j]; c
 		| Xor (p1, p2) ->
-			aux @@ And (Or (p1, p2), Not (And (p1, p2)))
+			proxy @@ And (Or (p1, p2), Not (And (p1, p2)))
 		| Implies (p1, p2) ->
-			aux @@ Or (Not p1, p2)
+			proxy @@ Or (Not p1, p2)
 		| Equiv (p1, p2) ->
-			aux @@ And (Implies (p1, p2), Implies (p2, p1)) in
+			proxy @@ And (Implies (p1, p2), Implies (p2, p1)) in
 	
-	append cnf [Pos (aux e)];
+	append cnf [Pos (proxy e)];
 	cnf
