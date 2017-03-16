@@ -104,3 +104,67 @@ let rec apply e i v = match e with
       end
 
   | x -> x
+
+(* Simplifies the given expression to remove unnecessary 
+   True and False litterals. *)
+let rec simplify = function
+  | And (e1, e2) ->
+    let e1' = simplify e1 in
+    let e2' = simplify e2 in
+    begin match e1', e2' with
+      | False, _
+      | _, False -> False
+      | True, _ -> e2'
+      | _, True -> e1'
+      | _ -> And (e1', e2')
+    end
+  | Or (e1, e2) ->
+    let e1' = simplify e1 in
+    let e2' = simplify e2 in
+    begin match e1', e2' with
+      | True, _
+      | _, True -> True
+      | False, _ -> e2'
+      | _, False -> e1'
+      | _ -> Or (e1', e2')
+    end
+  | Xor (e1, e2) ->
+    let e1' = simplify e1 in
+    let e2' = simplify e2 in
+    begin match e1', e2' with
+      | True, True -> False
+      | True, _
+      | _, True -> True
+      | False, _ -> e2'
+      | _, False -> e1'
+      | _ -> Xor (e1', e2')
+    end
+  | Not e ->
+    let e' = simplify e in
+    begin match e' with
+      | True -> False
+      | False -> True
+      | _ -> Not e'
+    end
+  | Implies (e1, e2) ->
+    let e1' = simplify e1 in
+    let e2' = simplify e2 in
+    begin match e1', e2' with
+      | True, False -> False
+      | False, True
+      | False, False
+      | True, True -> True
+      | _, False -> Not (e1')
+      | _, _ -> Implies (e1', e2')
+    end
+  | Equiv (e1, e2) ->
+    let e1' = simplify e1 in
+    let e2' = simplify e2 in
+    begin match e1', e2' with
+      | False, False
+      | True, True -> True
+      | True, False
+      | False, True -> False
+      | _, _ -> Equiv (e1', e2')
+    end
+  | e -> e

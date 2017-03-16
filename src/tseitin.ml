@@ -8,7 +8,7 @@ open Cnf
 
 (* Applies the Tseitin transform on a given expression. *)
 let transform e =
-	let e', count = rename_vars e in
+	let e', count = rename_vars @@ simplify e in
 	
 	(* The smallest unused variable name. *)
 	let smallest = ref count in
@@ -57,5 +57,5 @@ let transform e =
 		| Equiv (p1, p2) ->
 			proxy @@ And (Implies (p1, p2), Implies (p2, p1)) in
 	
-	append cnf [Pos (proxy e)];
+	append cnf [Pos (proxy e')];
 	cnf
