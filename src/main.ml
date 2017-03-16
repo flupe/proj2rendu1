@@ -4,11 +4,13 @@ let source_file = ref ""
 let export_file = ref ""
 let use_minisat = ref false
 let use_debug = ref false
+let use_tests = ref false
 
 let speclist =
   [ "-tseitin", Arg.Set_string export_file, "Export the given formula in SAT format"
   ; "-minisat", Arg.Set use_minisat, "Run minisat on the given formula"
   ; "-debug", Arg.Set use_debug, "Print additionnal information during execution"
+  ; "-tests", Arg.Set use_tests, "Runs a full test suite"
   ]
 
 let print_header s =
@@ -32,6 +34,12 @@ let print_header s =
 let () = begin
   Arg.parse speclist ((:=) source_file) "F2BDD 2017";
   
+  if !use_tests then begin
+    print_header "Will it blend? That is the question.";
+    Tests.run ();
+    exit 0
+  end;
+
   let in_chan =
     try open_in !source_file
     with _ ->
@@ -86,7 +94,7 @@ let () = begin
     print_header "What `minisat` has to say.";
     match Cnf.minisat cnf with
       | None -> print_endline "ARGH. The formula isn't satisfiable."
-      | Some ht -> begin
+      | Some assign -> begin
           print_endline "OK. The formula is satisfiable.";
           print_newline ();
           print_endline "Possible assignations:";
@@ -94,7 +102,7 @@ let () = begin
             if b then
               print_endline @@ "- Variable " ^ string_of_int v ^ " is true."
             else
-              print_endline @@ "- Variable " ^ string_of_int v ^ " is false.") ht
+              print_endline @@ "- Variable " ^ string_of_int v ^ " is false.") assign
         end
   end;
 

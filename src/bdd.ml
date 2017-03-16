@@ -106,3 +106,27 @@ let display robdd =
   ignore @@ Sys.command "dot -Tpdf /tmp/graph.dot -o /tmp/graph.pdf";
   ignore @@ Sys.command "xdg-open /tmp/graph.pdf"
 
+(* resolve : (int -> bool) -> robdd -> bool *)
+(* Returns the value of the leaf for a given assignation. *)
+let resolve f =
+  let rec aux r = match r.value with
+    | Node (i, r1, r2) ->
+        if f i then aux r2 else aux r1
+    | True -> true
+    | False -> false in
+  aux
+
+exception NegativeTest
+
+(* for_all_leaves : bool -> robdd -> bool *)
+(* Checks that every leaf is either true or false. *)
+let for_all_leaves b r =
+  let rec aux r = match r.value with
+    | Node (i, r1, r2) -> aux r1; aux r2 
+    | True -> if not b then raise NegativeTest
+    | False -> if b then raise NegativeTest in
+  try 
+    aux r;
+    true
+  with NegativeTest ->
+    false
