@@ -17,6 +17,7 @@ end
 module type S = sig
   type t
   type data
+  val iter : (data hash_consed -> unit) -> t -> unit
   val fold : ('a -> data hash_consed -> 'a) -> 'a -> t -> 'a
   val create : int -> t
   val hashcons : t -> data -> data hash_consed
@@ -30,7 +31,7 @@ module Make (H : HashedType) : (S with type data = H.t) = struct
 
   type t =
     { mutable table : H.t hash_consed Weak.t array
-    ; mutable size : int (* the amount of values we can store *)
+    ; mutable size : int (* the amount of values we can currently hold *)
     ; mutable next_tag : int
     }
 
@@ -112,7 +113,7 @@ module Make (H : HashedType) : (S with type data = H.t) = struct
     if new_length > old_length then begin
       let new_table = create new_length in
       t.table <- new_table.table;
-      iter (fun v -> add new_table v) t;
+      iter (add new_table) t;
       t.size <- new_table.size;
     end
 
