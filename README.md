@@ -1,8 +1,6 @@
-[school assignment](http://perso.ens-lyon.fr/daniel.hirschkoff/P2/docs/rendu1.pdf)
-
 # About this project.
 
-First assignment -- Lucas Escot & Romain Liautaud -- PROJ2 *(Daniel Hirschkoff, ENS de Lyon, 2017)*.
+[First assignment](http://perso.ens-lyon.fr/daniel.hirschkoff/P2/) -- Lucas Escot & Romain Liautaud -- PROJ2 *(Daniel Hirschkoff, ENS de Lyon, 2017)*.
 
 ## Usage.
 
