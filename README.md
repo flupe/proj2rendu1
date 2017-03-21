@@ -5,7 +5,7 @@
 ## Usage.
 
 - Compile with `make`.
-- Run with `./f2bdd blabla.form`.
+- Run with `./f2bdd demo.form`.
 - Add option `-tseitin foo.cnf` to convert the input formula to the DIMACS SAT format (via a Tseitin transform), and save it in file `foo.cnf`.
 - Add option `-minisat` to run the SAT conversion of the input formula through `minisat`, and display the satisfiability results.
 - Add option `-debug` to get useful information, e.g. about the output of the parser and the Tseitin transform.
