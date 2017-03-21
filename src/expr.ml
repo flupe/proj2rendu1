@@ -8,6 +8,7 @@ type expr =
   | Implies of expr * expr
   | Equiv of expr * expr
 
+(* Returns a "pretty" representation of an expression. *)
 let rec string_of_expr = function
   | True -> "True"
   | False -> "False"
@@ -19,6 +20,7 @@ let rec string_of_expr = function
   | Implies (l, r) -> "(" ^ string_of_expr l ^ ") => (" ^ string_of_expr r ^ ")"
   | Equiv (l, r) -> "(" ^ string_of_expr l ^ ") <=> (" ^ string_of_expr r ^ ")"
 
+(* Renames all the variables from e, from 1 to |e|. *)
 let rename_vars e =
   let count = ref 0 in
   let vars = Hashtbl.create 9 in
@@ -40,8 +42,10 @@ let rename_vars e =
     | Equiv (l, r) -> Equiv (aux l, aux r)
     | x -> x
   in
-  aux e, !count
+  aux e, vars, !count
 
+(* Partially evaluates the expression e given that
+   variable i has value v. *)
 let rec apply e i v = match e with
   | Var x when x = i -> v
 
@@ -105,8 +109,8 @@ let rec apply e i v = match e with
 
   | x -> x
 
-(* Simplifies the given expression to remove unnecessary 
-   True and False litterals. *)
+(* Simplifies the given expression to remove
+   unnecessary True and False litterals. *)
 let rec simplify = function
   | And (e1, e2) ->
     let e1' = simplify e1 in

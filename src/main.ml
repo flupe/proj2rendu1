@@ -92,17 +92,18 @@ let () = begin
   if !use_minisat then begin  
     print_newline ();
     print_header "What `minisat` has to say.";
+    let _, mappings, _ = rename_vars expr in
     match Cnf.minisat cnf with
       | None -> print_endline "ARGH. The formula isn't satisfiable."
       | Some assign -> begin
           print_endline "OK. The formula is satisfiable.";
           print_newline ();
           print_endline "Possible assignations:";
-          Hashtbl.iter (fun v b ->
-            if b then
-              print_endline @@ "- Variable " ^ string_of_int v ^ " is true."
+          Hashtbl.iter (fun v vm ->
+            if Hashtbl.find assign vm then
+              print_endline @@ "- Variable " ^ (string_of_int v) ^ " is true."
             else
-              print_endline @@ "- Variable " ^ string_of_int v ^ " is false.") assign
+              print_endline @@ "- Variable " ^ (string_of_int v) ^ " is false.") mappings
         end
   end;
 

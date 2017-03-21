@@ -38,7 +38,7 @@ module HS = Set.Make(OrderedRobdd)
 
 (* from_expr : Expr.expr -> robdd * int * int *)
 let from_expr e =
-  let e', n = Expr.rename_vars e in
+  let e', _, n = Expr.rename_vars e in
   let memory = HC.create 251 in
   let hashcons = HC.hashcons memory in
 

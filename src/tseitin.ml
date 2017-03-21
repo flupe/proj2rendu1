@@ -8,8 +8,8 @@ open Cnf
 
 (* Applies the Tseitin transform on a given expression. *)
 let transform e =
-	let e', count = rename_vars @@ simplify e in
-	
+	let e', mapping, count = rename_vars @@ simplify e in
+
 	(* The smallest unused variable name. *)
 	let smallest = ref count in
 	let cnf = Cnf.create () in
