@@ -2,6 +2,8 @@
 
 # About this project.
 
+First assignment -- Lucas Escot & Romain Liautaud -- PROJ2 *(Daniel Hirschkoff, ENS de Lyon, 2017)*.
+
 ## Usage.
 
 - Compile with `make`.
