@@ -12,8 +12,13 @@
 - Add option `-tests` to dismiss all the other arguments, and run a series of tests *(detailed below)*.
 
 ## Test suite.
+
 When running `./f2bdd -tests`, the following tests will be performed:
-- 
+- `parity`, for n in 15..20.
+- `adder`, for n in 3..7.
+- `rotation`, for n in 5..10.
+- `drawers`, for n in 1..5.
+- Randomly generated formulas of depths in 10..15.
 
 ## Code structure.
 

@@ -121,19 +121,19 @@ let run () =
       print_endline "Failed."
   done;
 
-  for n = 5 to 10 do
-    print_string @@ "Testing `random` for n = " ^ string_of_int n ^ "... ";
+  for n = 1 to 5 do
+    print_string @@ "Testing `drawers` for n = " ^ string_of_int n ^ "... ";
     flush_all ();
-    if compare @@ random n 30 20 then
+    if compare @@ drawers n then
       print_endline "Passed!"
     else
       print_endline "Failed."
   done;
 
-  for n = 1 to 5 do
-    print_string @@ "Testing `drawers` for n = " ^ string_of_int n ^ "... ";
+  for n = 5 to 10 do
+    print_string @@ "Testing `random` for n = " ^ string_of_int n ^ "... ";
     flush_all ();
-    if compare @@ drawers n then
+    if compare @@ random n 30 20 then
       print_endline "Passed!"
     else
       print_endline "Failed."
