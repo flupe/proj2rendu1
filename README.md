@@ -53,8 +53,9 @@ Finally, each `hash_consed` term is associated with a unique integer id (its `ta
 
 [hashconsing]: https://www.lri.fr/~filliatr/ftp/publis/hash-consing2.pdf
 
-### About Sifting.
+### About sifting.
 
+After a few fruitless attempts, we've decided not to implement sifting altogether. One of the reasons is purely practical: the `swap` operation used in sifting is indeed not easily implementable using our tree-based data structure for expressions, so supporting sifting would have meant moving away from this structure to something much less idiomatic, and rewriting most of our existing code in the process.
 
 ## Tseitin transform.
 
